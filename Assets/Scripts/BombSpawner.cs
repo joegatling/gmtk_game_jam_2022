@@ -24,6 +24,9 @@ namespace DungeonGame
         [Space]
         [SerializeField] private Bomb _bombPrefab = default;
 
+        [Header("SFX")]
+        [SerializeField] private AudioClip _spawnSound = default;
+
         Bomb _lastSpawnedBomb = null;
 
         private void Start()
@@ -46,13 +49,15 @@ namespace DungeonGame
                 _lastSpawnedBomb.transform.SetParent(transform, false);
                 _lastSpawnedBomb.transform.rotation = Quaternion.identity;
 
+                GetComponent<AudioSource>().PlayOneShot(_spawnSound);
+
                 _lastSpawnedBomb.transform.position = transform.position;
                 var r = _lastSpawnedBomb.gameObject.GetComponent<Rigidbody>();
                 r.AddForce(transform.forward * _launchSpeed, ForceMode.VelocityChange);
 
                 if(_spawnType == SpawnType.Continuous)
                 {
-                    IESpawnBombAfterDelay();
+                    StartCoroutine(IESpawnBombAfterDelay());
                 }
                 else if(_spawnType == SpawnType.AfterPreviousExplodes)
                 {
@@ -71,7 +76,7 @@ namespace DungeonGame
             _lastSpawnedBomb.onExplode -= OnBombExplode;
             _lastSpawnedBomb = null;
 
-            IESpawnBombAfterDelay();
+            StartCoroutine(IESpawnBombAfterDelay());
     }
 
         private void OnStartHolding(HoldableItem holdable, Holder holder)
@@ -80,7 +85,7 @@ namespace DungeonGame
             _lastSpawnedBomb.onExplode -= OnBombExplode;
             _lastSpawnedBomb = null;
 
-            IESpawnBombAfterDelay();
+            StartCoroutine(IESpawnBombAfterDelay());
         }
 
         IEnumerator IESpawnBombAfterDelay()

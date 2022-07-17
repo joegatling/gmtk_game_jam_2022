@@ -58,7 +58,7 @@ namespace DungeonGame
         {
             var holdableItem = hit.gameObject.GetComponent<HoldableItem>();
 
-            if (holdableItem != null && _autoPickUpItems && holdableItem.canPickUp)
+            if (holdableItem != null && _autoPickUpItems && holdableItem.canPickUp && !player.isStunned)
             {
                 if (!isHoldingItem)
                 {

@@ -10,6 +10,9 @@ namespace DungeonGame
         [SerializeField] GameObject _wallMesh = default;
         [SerializeField] BoxCollider _boundsCollider = default;
 
+        [Header("SFX")]
+        [SerializeField] List<AudioClip> _explodeSounds = default;
+
         void Start()
         {
         }
@@ -19,6 +22,8 @@ namespace DungeonGame
             _wallMesh.SetActive(false);
             _boundsCollider.enabled = false;
             _debrisParticles.Play(true);
+
+            GetComponent<AudioSource>().PlayOneShot(_explodeSounds[Random.Range(0, _explodeSounds.Count)]);
         }
 
         void OnValidate()
