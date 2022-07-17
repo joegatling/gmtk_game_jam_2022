@@ -8,7 +8,7 @@ namespace DungeonGame
 {
 
     [RequireComponent(typeof(HoldableItem))]
-    public class Bomb : MonoBehaviour
+    public class Bomb : MonoBehaviour, IExplodable
     {
         public System.Action<int> onExplode = delegate { };
 
@@ -29,6 +29,7 @@ namespace DungeonGame
         [SerializeField] private ParticleSystem _fuseParticles = default;
         [SerializeField] private ParticleSystem _explodeParticles = default;
         [SerializeField] private AudioSource _audioSource = default;
+        [SerializeField] Collider _collider = default;
 
         [Header("SFX")]
         [SerializeField] private List<AudioClip> _explosionSounds = default;
@@ -38,6 +39,8 @@ namespace DungeonGame
 
         HoldableItem _holdableItem = default;
         public HoldableItem holdableItem => _holdableItem;
+
+        bool _hasExploded = false;
 
         // Start is called before the first frame update
         void Awake()
@@ -119,17 +122,29 @@ namespace DungeonGame
                 holder.DropCurrentHoldable();
             }
 
-            _fuseParticles.Stop(true);
-            _explodeParticles.Play(true);
+            Explode();
+        }
 
-            _audioSource.Stop();
-            _audioSource.PlayOneShot(_explosionSounds[Random.Range(0, _explosionSounds.Count)]);
+        private void Explode()
+        {
+            if (!_hasExploded)
+            {
 
-            ExplodeObjects();
 
-            _mainRenderer.enabled = false;
+                _fuseParticles.Stop(true);
+                _explodeParticles.Play(true);
 
-            Destroy(gameObject, 3.0f);
+                _collider.enabled = false;
+
+                _audioSource.Stop();
+                _audioSource.PlayOneShot(_explosionSounds[Random.Range(0, _explosionSounds.Count)]);
+
+                ExplodeObjects();
+
+                _mainRenderer.gameObject.SetActive(false);
+
+                Destroy(gameObject, 3.0f);
+            }
         }
 
         private void OnDrawGizmosSelected()
@@ -154,6 +169,19 @@ namespace DungeonGame
             }
 
             onExplode(hits.Length);
+        }
+
+        public void Explode(Bomb bomb)
+        {
+            StartCoroutine(IEDelayExplode());
+        }
+
+        private IEnumerator IEDelayExplode()
+        {
+            yield return new WaitForSeconds(Random.Range(0.1f, 0.3f));
+
+            Explode();
+
         }
     }
 }
