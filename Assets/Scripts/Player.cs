@@ -18,7 +18,9 @@ namespace DungeonGame
         private CharacterController _characterController = default;
 
         private Vector3 _velocity = Vector3.zero;
-        
+
+        private Vector3 _facingDireciton = Vector3.left;
+        public Vector3 facingDirection => _facingDireciton;
 
         // Start is called before the first frame update
         void Start()
@@ -28,8 +30,6 @@ namespace DungeonGame
             _characterController = GetComponent<CharacterController>();
 
 
-            Debug.Log(_characterController.isTrigger);
-
             GetComponent<PlayerInput>().onActionTriggered += HandleAction;
             
         }
@@ -38,11 +38,9 @@ namespace DungeonGame
         // Update is called once per frame
         void LateUpdate()
         {
-            _animator.SetFloat("x_facing", _currentInput.x);
-            _animator.SetFloat("y_facing", _currentInput.y);
+            _animator.SetFloat("x_facing", facingDirection.x);
+            _animator.SetFloat("y_facing", facingDirection.z);
             _animator.SetFloat("speed", _currentInput.magnitude);
-
-
 
             _navMeshAgent.destination = transform.position;
             _navMeshAgent.updatePosition = false;
@@ -70,6 +68,12 @@ namespace DungeonGame
             if(context.action.name.Equals("locomotion", StringComparison.OrdinalIgnoreCase))
             {
                 _currentInput = context.action.ReadValue<Vector2>();
+
+                if(_currentInput.magnitude > 0.01f)
+                {
+                    _facingDireciton = new Vector3(_currentInput.x, 0.0f, _currentInput.y).normalized;
+                }
+
             }
         }
     }

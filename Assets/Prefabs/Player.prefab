@@ -492,7 +492,7 @@ Transform:
   - {fileID: 1497111749711559343}
   - {fileID: 3797840942080134197}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &5774047646505993526
 Animator:
@@ -526,7 +526,7 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 2
   m_Height: 1
-  m_Radius: 0.5
+  m_Radius: 0.4
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.0001
@@ -589,7 +589,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 9081148144624794182}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.4
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -643,4 +643,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _autoPickUpItems: 1
-  _holdingParent: {fileID: 0}
+  _holdingParent: {fileID: 8805894701806639789}
