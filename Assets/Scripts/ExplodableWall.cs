@@ -4,8 +4,11 @@ using UnityEngine;
 
 namespace DungeonGame
 {
+    [RequireComponent(typeof(AudioSource))]
     public class ExplodableWall : MonoBehaviour, IExplodable
     {
+        public System.Action<ExplodableWall> onExplode = delegate { };
+
         [SerializeField] ParticleSystem _debrisParticles = default;
         [SerializeField] GameObject _wallMesh = default;
         [SerializeField] BoxCollider _boundsCollider = default;
@@ -19,6 +22,8 @@ namespace DungeonGame
 
         public void Explode(Bomb bomb)
         {
+            onExplode(this);
+
             _wallMesh.SetActive(false);
             _boundsCollider.enabled = false;
             _debrisParticles.Play(true);

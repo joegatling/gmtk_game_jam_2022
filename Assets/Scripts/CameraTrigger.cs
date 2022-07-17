@@ -13,7 +13,15 @@ public class CameraTrigger : MonoBehaviour
     {
         if(other.tag == "Player")
         {
-            _camera.MoveToTopOfPrioritySubqueue();
+            _camera.Priority = 100;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            _camera.Priority = 10;
         }
     }
 

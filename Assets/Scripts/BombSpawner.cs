@@ -14,6 +14,9 @@ namespace DungeonGame
             AfterPreviousCollected
 
         }
+        [SerializeField] private Bomb _optionalInitialBomb = null;
+
+        [Space]
 
         [SerializeField] private SpawnType _spawnType = SpawnType.AfterPreviousCollected;
         [SerializeField] private float _delay = 3.0f;
@@ -31,7 +34,15 @@ namespace DungeonGame
 
         private void Start()
         {
-            SpawnBomb();
+            if(_optionalInitialBomb != null)
+            {
+                _lastSpawnedBomb = _optionalInitialBomb;
+                RegisterCurrentBomb();
+            }
+            else
+            {
+                SpawnBomb();
+            }
         }
 
         void SpawnBomb()
@@ -55,35 +66,43 @@ namespace DungeonGame
                 var r = _lastSpawnedBomb.gameObject.GetComponent<Rigidbody>();
                 r.AddForce(transform.forward * _launchSpeed, ForceMode.VelocityChange);
 
-                if(_spawnType == SpawnType.Continuous)
-                {
-                    StartCoroutine(IESpawnBombAfterDelay());
-                }
-                else if(_spawnType == SpawnType.AfterPreviousExplodes)
-                {
-                    _lastSpawnedBomb.onExplode += OnBombExplode;
-                }
-                else if(_spawnType == SpawnType.AfterPreviousCollected)
-                {
-                    _lastSpawnedBomb.holdableItem.onStartHolding += OnStartHolding;
-                }
+                RegisterCurrentBomb();
             }
         }
 
-        private void OnBombExplode(int numberOfObjectsDestroyed)
+        void RegisterCurrentBomb()
+        {
+            if (_spawnType == SpawnType.Continuous)
+            {
+                StartCoroutine(IESpawnBombAfterDelay());
+            }
+            else if (_spawnType == SpawnType.AfterPreviousExplodes)
+            {
+                _lastSpawnedBomb.onExplode += OnBombExplode;
+            }
+            else if (_spawnType == SpawnType.AfterPreviousCollected)
+            {
+                _lastSpawnedBomb.holdableItem.onStartHolding += OnStartHolding;
+            }
+        }
+
+        void UnregisterCurrentBomb()
         {
             _lastSpawnedBomb.holdableItem.onStartHolding -= OnStartHolding;
             _lastSpawnedBomb.onExplode -= OnBombExplode;
             _lastSpawnedBomb = null;
+        }
+
+        private void OnBombExplode(int numberOfObjectsDestroyed)
+        {
+            UnregisterCurrentBomb();
 
             StartCoroutine(IESpawnBombAfterDelay());
     }
 
         private void OnStartHolding(HoldableItem holdable, Holder holder)
         {
-            _lastSpawnedBomb.holdableItem.onStartHolding -= OnStartHolding;
-            _lastSpawnedBomb.onExplode -= OnBombExplode;
-            _lastSpawnedBomb = null;
+            UnregisterCurrentBomb();
 
             StartCoroutine(IESpawnBombAfterDelay());
         }

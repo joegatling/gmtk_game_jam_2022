@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 namespace DungeonGame
 {
@@ -18,7 +19,7 @@ namespace DungeonGame
         private Vector2 _currentInput = Vector2.zero;
 
         private Animator _animator = default;
-        private NavMeshAgent _navMeshAgent = default;
+        //private NavMeshAgent _navMeshAgent = default;
         private CharacterController _characterController = default;
 
         private Vector3 _velocity = Vector3.zero;
@@ -32,7 +33,7 @@ namespace DungeonGame
         void Start()
         {
             _animator = GetComponent<Animator>();
-            _navMeshAgent = GetComponent<NavMeshAgent>();
+            //_navMeshAgent = GetComponent<NavMeshAgent>();
             _characterController = GetComponent<CharacterController>();
 
 
@@ -50,9 +51,9 @@ namespace DungeonGame
                 _animator.SetFloat("y_facing", facingDirection.z);
                 _animator.SetFloat("speed", _currentInput.magnitude);
 
-                _navMeshAgent.destination = transform.position;
-                _navMeshAgent.updatePosition = false;
-                _navMeshAgent.updateRotation = false;
+                //_navMeshAgent.destination = transform.position;
+                //_navMeshAgent.updatePosition = false;
+                //_navMeshAgent.updateRotation = false;
 
                 _velocity = new Vector3(_currentInput.x, _velocity.y, _currentInput.y);
 
@@ -67,7 +68,7 @@ namespace DungeonGame
 
 
                 _characterController.Move(_velocity * _movementSpeed * Time.deltaTime);
-                _navMeshAgent.velocity = _characterController.velocity;
+                //_navMeshAgent.velocity = _characterController.velocity;
             }
         }
 
@@ -91,15 +92,15 @@ namespace DungeonGame
             GetComponent<AudioSource>().PlayOneShot(_footstepSounds[Random.Range(0, _footstepSounds.Count)]);
         }
 
-        public void DoStun()
+        public void DoStun(bool kill = false)
         {
             if(!isStunned)
             {
-                StartCoroutine(IEDoStun());
+                StartCoroutine(IEDoStun(kill));
             }
         }
 
-        private IEnumerator IEDoStun()
+        private IEnumerator IEDoStun(bool kill)
         {
             isStunned = true;
             _animator.SetTrigger("do_stunned");
@@ -110,9 +111,17 @@ namespace DungeonGame
 
             yield return new WaitForSeconds(_stunTime);
 
-            _animator.SetTrigger("do_recover");
+            if (kill)
+            {
+                SceneManager.LoadScene(0, LoadSceneMode.Single);
+            }
+            else
+            {
 
-            isStunned = false;
+                _animator.SetTrigger("do_recover");
+
+                isStunned = false;
+            }
         }
 
         public void Explode(Bomb bomb)

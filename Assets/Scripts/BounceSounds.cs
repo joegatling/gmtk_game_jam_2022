@@ -19,7 +19,7 @@ public class BounceSounds : MonoBehaviour
             if (_layerMask == (_layerMask | 1 << collision.gameObject.layer))
             {
                 float velocity = collision.relativeVelocity.magnitude;
-                float volume = Mathf.Clamp01((velocity - _minVelocity) * _velocityVolumeMultiplier);
+                float volume = _minVolume + Mathf.Clamp01((velocity - _minVelocity) * _velocityVolumeMultiplier);
 
                 _audioSource.PlayOneShot(_sounds[Random.Range(0, _sounds.Count)], volume);
             }
